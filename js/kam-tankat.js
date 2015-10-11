@@ -1,15 +1,15 @@
 "use strict";
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FUEL_PRICE_AUT_URL = "http://kam-tankat.net46.net/aut-price.php";
-var FUEL_PRICE_SLO_URL = "http://kam-tankat.net46.net/slo-price.php";
+var FUEL_PRICE_AUT_URL = "/server/aut-price.php";
+var FUEL_PRICE_SLO_URL = "/server/slo-price.php";
 
 var kamTankat, view;
 
@@ -22,6 +22,11 @@ var Util = (function () {
         _classCallCheck(this, Util);
     }
 
+    // ***************
+    // ** CALLBACKS **
+    // ***************
+    // just because JavaScript is actually not that good in object oriented programming, d00h
+
     _createClass(Util, null, [{
         key: "createXMLHttpRequest",
         value: function createXMLHttpRequest() {
@@ -31,7 +36,7 @@ var Util = (function () {
                 request = new XMLHttpRequest();
             } else {
                 // code for IE6, IE5
-                request = new ActiveXObject("Microsoft.XMLHTTP");
+                request = new ActiveXObject('Microsoft.XMLHTTP');
             }
             return request;
         }
@@ -81,7 +86,7 @@ var Util = (function () {
     }, {
         key: "createAUTQueryString",
         value: function createAUTQueryString(location, radius, fuel) {
-            var checked = "checked";
+            var checked = 'checked';
             var circleBounds = new google.maps.Circle({ center: location, radius: radius }).getBounds();
             var northEast = circleBounds.getNorthEast();
             var southWest = circleBounds.getSouthWest();
@@ -104,15 +109,15 @@ var Util = (function () {
     }, {
         key: "googleMapsInit",
         value: function googleMapsInit() {
-            var inputAddress = document.getElementById("address");
+            var inputAddress = document.getElementById('address');
 
-            var map = new google.maps.Map(document.getElementById("map-canvas"), Util.options.mapOptions);
+            var map = new google.maps.Map(document.getElementById('map-canvas'), Util.options.mapOptions);
             var directionsService = new google.maps.DirectionsService();
             var directionsDisplay = new google.maps.DirectionsRenderer();
             var autocomplete = new google.maps.places.Autocomplete(inputAddress, Util.options.autocompleteOptions);
             directionsDisplay.setMap(map);
 
-            google.maps.event.addListenerOnce(map, "bounds_changed", function () {
+            google.maps.event.addListenerOnce(map, 'bounds_changed', function () {
                 Util.options.mapOptions.initialBounds = this.getBounds();
                 kamTankat.reset();
             });
@@ -131,7 +136,7 @@ var Util = (function () {
     }, {
         key: "removeHostingAnalytics",
         value: function removeHostingAnalytics(html) {
-            var index = html.indexOf("<!-- Hosting24 Analytics Code -->");
+            var index = html.indexOf('<!-- Hosting24 Analytics Code -->');
             var result = html;
             if (index > 0) {
                 result = html.substring(0, index);
@@ -143,10 +148,6 @@ var Util = (function () {
     return Util;
 })();
 
-// ***************
-// ** CALLBACKS **
-// ***************
-// just because JavaScript is actually not that good in object oriented programming, d00h
 function kamTankat2Callback(response) {
     kamTankat._kamTankat2(response);
 }
@@ -185,13 +186,13 @@ var Location = (function () {
 })();
 
 var Crossing = (function (_Location) {
+    _inherits(Crossing, _Location);
+
     function Crossing(initData) {
         _classCallCheck(this, Crossing);
 
         _get(Object.getPrototypeOf(Crossing.prototype), "constructor", this).call(this, initData.name, initData.lat, initData.lng);
     }
-
-    _inherits(Crossing, _Location);
 
     _createClass(Crossing, [{
         key: "calculateCoordDistance",
@@ -204,6 +205,8 @@ var Crossing = (function (_Location) {
 })(Location);
 
 var FuelStation = (function (_Location2) {
+    _inherits(FuelStation, _Location2);
+
     function FuelStation(initData) {
         _classCallCheck(this, FuelStation);
 
@@ -214,8 +217,6 @@ var FuelStation = (function (_Location2) {
         this.postalCode = initData.postalCode;
         this.fuelPrice = new FuelPrice(initData.spritPrice[0].amount, initData.spritPrice[0].spritId);
     }
-
-    _inherits(FuelStation, _Location2);
 
     _createClass(FuelStation, [{
         key: "setMarker",
@@ -289,10 +290,10 @@ var KamTankat = (function () {
         value: function setAutocomplete(autocomplete) {
             this.autocomplete = autocomplete;
         }
-    }, {
-        key: "isReady",
 
         //for debugging purposes
+    }, {
+        key: "isReady",
         value: function isReady() {
             if (!this.crossings || !this.map || !this.directionsService || !this.directionsDisplay || !this.startPlace) {
                 return false;
@@ -331,7 +332,7 @@ var KamTankat = (function () {
             this.nearestCrossings = undefined;
             this.fuelStations = undefined;
             this.startPlace = undefined;
-            this.directionsDisplay.set("directions", null);
+            this.directionsDisplay.set('directions', null);
             this.map.fitBounds(Util.options.mapOptions.initialBounds);
             view.reset();
         }
@@ -339,8 +340,8 @@ var KamTankat = (function () {
         key: "parseSloFuelPrices",
         value: function parseSloFuelPrices() {
             Util.loadJSON({ method: "GET", url: FUEL_PRICE_SLO_URL }, function (response) {
-                kamTankat.sloFuelPrice["DIE"] = new FuelPrice(parseFloat(response.Slovenia["diesel"].normal.price), "DIE");
-                kamTankat.sloFuelPrice["SUP"] = new FuelPrice(parseFloat(response.Slovenia["95"].normal.price), "SUP");
+                kamTankat.sloFuelPrice['DIE'] = new FuelPrice(parseFloat(response.Slovenia['diesel'].normal.price), 'DIE');
+                kamTankat.sloFuelPrice['SUP'] = new FuelPrice(parseFloat(response.Slovenia['95'].normal.price), 'SUP');
                 console.log(kamTankat.sloFuelPrice);
             });
         }
@@ -358,7 +359,7 @@ var KamTankat = (function () {
                 this.reset();
                 this.setStartPlace(place);
             } else {
-                alert("Vnesti moraš lokacijo in jo izbrati iz spustnega seznama!");
+                alert('Vnesti moraš lokacijo in jo izbrati iz spustnega seznama!');
                 return;
             }
             view.beforeKamTankat();
@@ -482,9 +483,9 @@ var KamTankat = (function () {
         value: function findFuelStations(callback) {
             var queryString = Util.createAUTQueryString(this.nearestCrossings[0].crossing.location, this.fuelStationRadius, view.getFuelType());
             Util.loadJSON({
-                method: "POST",
+                method: 'POST',
                 url: FUEL_PRICE_AUT_URL,
-                headers: [{ title: "Content-type", content: "application/x-www-form-urlencoded" }],
+                headers: [{ title: 'Content-type', content: 'application/x-www-form-urlencoded' }],
                 query: queryString
             }, callback);
         }
@@ -620,16 +621,20 @@ var View = (function () {
     function View() {
         _classCallCheck(this, View);
 
-        this.resultsPanel = $("#results");
-        this.overlay = $(".overlay");
-        this.fuelEfficiencyInput = $("#fuel-efficiency");
-        this.tankVolumeInput = $("#tank-volume");
-        this.fuelTypeInput = $("#fuel-type");
-        this.resultsTable = this.resultsPanel.find("tbody");
-        this.panelHeading = this.resultsPanel.find(".panel-heading");
-        this.panelBodySuccess = this.resultsPanel.find("#body-success");
-        this.panelBodyFail = this.resultsPanel.find("#body-fail");
+        this.resultsPanel = $('#results');
+        this.overlay = $('.overlay');
+        this.fuelEfficiencyInput = $('#fuel-efficiency');
+        this.tankVolumeInput = $('#tank-volume');
+        this.fuelTypeInput = $('#fuel-type');
+        this.resultsTable = this.resultsPanel.find('tbody');
+        this.panelHeading = this.resultsPanel.find('.panel-heading');
+        this.panelBodySuccess = this.resultsPanel.find('#body-success');
+        this.panelBodyFail = this.resultsPanel.find('#body-fail');
     }
+
+    // *******************
+    // ** MAIN FUNCTION **
+    // *******************
 
     _createClass(View, [{
         key: "getFuelEfficiency",
@@ -652,7 +657,7 @@ var View = (function () {
             this.overlay.fadeOut();
             this.resultsPanel.slideUp();
             this.resultsTable.empty();
-            this.resultsPanel.removeClass("panel-danger");
+            this.resultsPanel.removeClass('panel-danger');
             this.panelBodySuccess.hide();
             this.panelBodyFail.hide();
         }
@@ -676,13 +681,13 @@ var View = (function () {
             var headingContent;
 
             if (kamTankat.fuelStations[0].savings > 0) {
-                headingContent = "Pojdi tankat v Avstrijo!";
+                headingContent = 'Pojdi tankat v Avstrijo!';
             } else {
-                this.resultsPanel.addClass("panel-danger");
-                headingContent = "Ostani v Sloveniji!";
+                this.resultsPanel.addClass('panel-danger');
+                headingContent = 'Ostani v Sloveniji!';
             }
 
-            var heading = $("<h2>");
+            var heading = $('<h2>');
             heading.text(headingContent);
 
             this.panelHeading.empty();
@@ -697,9 +702,9 @@ var View = (function () {
             } else {
                 panelBody = this.panelBodySuccess;
             }
-            var tankVolume = panelBody.find("#tank-volume-out");
-            var sloTankCost = panelBody.find("#slo-tank-cost-out");
-            var autSavings = panelBody.find("#aut-savings-out");
+            var tankVolume = panelBody.find('#tank-volume-out');
+            var sloTankCost = panelBody.find('#slo-tank-cost-out');
+            var autSavings = panelBody.find('#aut-savings-out');
 
             tankVolume.text(this.getTankVolume());
             sloTankCost.text(kamTankat.sloTankCost);
@@ -721,17 +726,17 @@ var View = (function () {
                 for (var _iterator6 = kamTankat.fuelStations[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
                     var fs = _step6.value;
 
-                    var row = $("<tr>");
+                    var row = $('<tr>');
                     if (fs.savings > 0) {
-                        row.addClass("success");
+                        row.addClass('success');
                     }
                     var cols = [];
-                    cols.push("<td>" + fs.name + "</td>");
-                    cols.push("<td>" + fs.distance.text + "</td>");
-                    cols.push("<td>" + fs.duration.text + "</td>");
-                    cols.push("<td>" + fs.fuelPrice.price + " €/l</td>");
-                    cols.push("<td>" + fs.tankCost + " €</td>");
-                    cols.push("<td><b>" + fs.savings + " €</b></td>");
+                    cols.push('<td>' + fs.name + '</td>');
+                    cols.push('<td>' + fs.distance.text + '</td>');
+                    cols.push('<td>' + fs.duration.text + '</td>');
+                    cols.push('<td>' + fs.fuelPrice.price + ' €/l</td>');
+                    cols.push('<td>' + fs.tankCost + ' €</td>');
+                    cols.push('<td><b>' + fs.savings + ' €</b></td>');
                     var _iteratorNormalCompletion7 = true;
                     var _didIteratorError7 = false;
                     var _iteratorError7 = undefined;
@@ -779,16 +784,13 @@ var View = (function () {
     return View;
 })();
 
-// *******************
-// ** MAIN FUNCTION **
-// *******************
 (function main() {
     Util.loadJSON({ method: "GET", url: "js/options.json" }, function (options) {
         Util.options = options;
 
         view = new View();
         kamTankat = new KamTankat(options.crossingsLimit, options.fuelStationRadius);
-        google.maps.event.addDomListener(window, "load", Util.googleMapsInit);
+        google.maps.event.addDomListener(window, 'load', Util.googleMapsInit);
         var crossings = [];
         var _iteratorNormalCompletion8 = true;
         var _didIteratorError8 = false;
